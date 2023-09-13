@@ -79,7 +79,7 @@ src
 - 각 Area와 Bar에 `value_area`와 `value_bar`를 dataset에 설정.
 - 각 Area와 Bar의 scales에 yAxisID를 통한 수치 표현 및 position에 따른 위치 조정.
 
-```javscript
+```typescript
 export const data = {
   labels,
   datasets: [
