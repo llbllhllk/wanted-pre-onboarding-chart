@@ -32,26 +32,20 @@
 
 ```jsx
 src
- ┣ 📂 api         네트워크 api 호출관련 로직
- ┃ ┣ 📄 cache.ts
- ┃ ┣ 📄 http.ts
- ┃ ┗ 📄 sick.tsx
  ┣ 📂 components  컴포넌트 분리
  ┃ ┣ 📂 common
- ┃ ┃ ┣ 📄 SearchBar.tsx
- ┃ ┃ ┗ 📄 SearchButton.tsx
- ┃ ┗ 📄 SearchSuggestion.tsx
- ┣ 📂 hooks       커스텀 훅
- ┃ ┣ 📄 useClickOutside.ts
- ┃ ┣ 📄 useDebounce.ts
- ┃ ┗ 📄 useKeyDown.ts
+ ┃ ┃ ┗ 📄 Button.tsx
+ ┃ ┣ 📄 FilterBar.tsx
+ ┃ ┗ 📄 Graph.tsx
+ ┣ 📂 data       데이터
+ ┃ ┣ 📄 id.ts
+ ┃ ┗ 📄 mock.ts
  ┣ 📂 pages       페이지 분리
  ┃ ┗ 📄 Home.tsx
- ┣ 📂 routes      라우팅
+ ┣ 📂 router      라우팅
  ┃ ┗ 📄 Router.tsx
  ┣ 📂 types       타입 정의
- ┣ 📂 utils       공통 함수
- ┗ ┗ 📄 useKeyDown.tsx
+ ┗ ┗ 📄 index.ts
 
 ```
 
@@ -60,13 +54,13 @@ src
 - Create React App (+ typescript)
 - react-router-dom : client-side routing용
 - styled-components : 컴포넌트 기반 css 처리
-- axios: 통신 라이브러리
+- chart.js(+ react-chartjs-2): 자바스크립트 Chart
 
 <br>
 
 ## 🎉 Preview
 
-![project]()
+![project](https://github.com/llbllhllk/wanted-pre-onboarding-chart/assets/33623123/eddef9d3-88bc-4a4f-a869-b877cc221873)
 
 <br />
 
@@ -74,61 +68,115 @@ src
 
 ### ✅ Assignment 1
 
-> - 질환명 검색시 API 호출 통해서 검색어 추천 기능 구현
->   - 검색어가 없을 시 “검색어 없음” 표출
+> - 시계열 차트 만들기
+>   - 주어진 JSON 데이터의 `key`값(시간)을 기반으로 시계열 차트를 만들어주세요
+>   - 하나의 차트안에 Area 형태의 그래프와 Bar 형태의 그래프가 모두 존재하는 복합 그래프로 만들어주세요
+>   - Area 그래프의 기준값은 `value_area` 값을 이용해주세요
+>   - Bar 그래프의 기준값은 `value_bar` 값을 이용해주세요
+>   - 차트의 Y축에 대략적인 수치를 표현해주세요(예시 이미지 참고)
 
-### api 호출
+- Chart.js의 Chart 컴포넌트를 통해 복합 그래프를 구현.
+- 각 Area와 Bar에 `value_area`와 `value_bar`를 dataset에 설정.
+- 각 Area와 Bar의 scales에 yAxisID를 통한 수치 표현 및 position에 따른 위치 조정.
 
-- axios class를 사용해 정의.
-- 해당 class의 매개변수로 storage를 받아 api 호출을 할때 해당 storage에 저장.
-
-### 출력
-
-- 사용자 입력 시 api 호출 후 map으로 순회하여 Suggestion들을 출력.
+```
+export const data = {
+  labels,
+  datasets: [
+    {
+      type: 'line' as const,
+      fill: true,
+      label: 'value_area',
+      data: dataArray.map(item => item.value_area),
+      yAxisID: 'y',
+      backgroundColor: 'rgba(255, 120, 105, 0.5)',
+    },
+    {
+      type: 'bar' as const,
+      fill: true,
+      label: 'value_bar',
+      data: dataArray.map(item => item.value_bar),
+      yAxisID: 'y1',
+      backgroundColor: 'rgba(0, 196, 250, 0.5)',
+      position: 'right',
+    },
+  ],
+};
+```
 
 <br>
 
 ### ✅ Assignment 2
 
-> - API 호출별로 로컬 캐싱 구현
->   - 캐싱 기능을 제공하는 라이브러리 사용 금지(React-Query 등)
->   - 캐싱을 어떻게 기술했는지에 대한 내용 README에 기술
->   - expire time을 구현할 경우 가산점 (extra)
+> - 호버 기능 구현
+>   - 특정 데이터 구역에 마우스 호버시 `id, value_area, value_bar` 데이터를 툴팁 형태로 제공해주세요
 
-### cacheStorage로 저장
+- tooltip의 callbacks를 통해 특정 데이터 구역에 마우스 호버시 `id`, `value_area`, `value_bar` 데이터셋과 mock에서 추출하고 return하여 출력.
 
-- api 호출 전 get을 통해 캐시가 존재하는지 확인.
-- 존재하면 캐시를 리턴하고 없을 경우 api 호출 후 set을 통해 캐시에 저장.
-
-### expire time 구현
-
-- header에 FETCH_DATE를 저장.
-- 캐시에 접근 시 `현재시간 - FETCH_DATE > EXPIRE_TIME`으로 캐시 만료 여부를 판단하고 만료되었으면 삭제.
+```
+export const options: ChartOptions = {
+  tooltip: {
+    enabled: true,
+    callbacks: {
+      label: context => {
+        const datasetLabel = context.dataset.label || '';
+        const label = context.label || '';
+        const value_area = mock.response[label]?.value_area;
+        const value_bar = mock.response[label]?.value_bar;
+        const id = mock.response[label]?.id || '';
+        return `${datasetLabel}: ID: ${id}, value_area: ${value_area}, value_bar: ${value_bar}`;
+      },
+    },
+  }
+}
+```
 
 <br />
 
 ### ✅ Assignment 3
 
-> - 입력마다 API 호출하지 않도록 API 호출 횟수를 줄이는 전략 수립 및 실행
->   - README에 전략에 대한 설명 기술
->   - API를 호출할 때 마다 console.info("calling api") 출력을 통해 콘솔창에서 API 호출 횟수 확인이 가능하도록 설정
+> - 필터링 기능 구현
+>   - 필터링 기능을 구현해주세요, 필터링은 특정 데이터 구역을 하이라이트 하는 방식으로 구현해주세요
+>   - 필터링 기능은 버튼 형태로 ID값(지역이름)을 이용해주세요
+>   - 필터링 시 **버튼**에서 선택한 ID값과 동일한 ID값을 가진 데이터 구역만 하이라이트 처리를 해주세요
+>   - 특정 데이터 **구역**을 클릭 시에도 필터링 기능과 동일한 형태로 동일한 ID값을 가진 데이터 구역을 하이라이트해주세요
 
-### debounce 전략
+- plugin 설정을 통해 특정 데이터 영역을 클릭 시 `handleBarClick`를 호출.
+- 클릭한 영역의 `id`값을 `selectedID` state에 할당.
+- `selectedID`값 변경에 따른 useEffect hook을 통해 bar타입을 가지는 그래프의 `id`와 `selectedID`가 같은 지를 판별하여 backgroundColor를 조정 후 update.
 
-- API 요청에 500ms의 debounce를 적용.
-- 사용자의 입력마다 API 호출 하는것이 아닌 사용자의 입력이 해당 시간동안 없을 때만 호출하게 하여 횟수를 줄임.
-- default로 10개의 추천 검색어를 출력하도록 지정.
+```
+useEffect(() => {
+    const updatedData = {
+      ...data,
+      datasets: data.datasets.map((dataset: any) => {
+        if (selectedID && dataset.type === 'bar') {
+          const updatedBackgroundColor = dataset.data.map((item: any, index: number) => {
+            const matchingData = dataArray[index];
+            return matchingData && matchingData.id === selectedID
+              ? 'rgba(248, 69, 69, 0.6)'
+              : 'rgba(0, 102, 204, 0.6)';
+          });
 
-<br />
+          return {
+            ...dataset,
+            backgroundColor: updatedBackgroundColor,
+          };
+        } else if (!selectedID && dataset.type === 'bar') {
+          return {
+            ...dataset,
+            backgroundColor: new Array(dataset.data.length).fill('rgba(0, 102, 204, 0.6)'),
+          };
+        } else {
+          return dataset;
+        }
+      }),
+    };
 
-### ✅ Assignment 4
-
-> - 키보드만으로 추천 검색어들로 이동 가능하도록 구현
->   - 사용법 README에 기술
-
-- 키보드 이벤트와 관련한 useKeyDown 커스텀 훅으로 분리.
-- input의 onKeyDown 핸들러와 연결후 인덱스 상태 확인.
-- 키에 따라 인덱스 상태를 변경하고 그에 따른 스타일링을 지정.
+    chartRef.current.data = updatedData;
+    chartRef.current.update();
+  }, [selectedID]);
+```
 
 <br />
 
@@ -136,4 +184,4 @@ src
 
 ### 배포
 
-- 해당 프로젝트는 netlify를 통해 배포되었습니다. [배포링크](https://master--crinical-finder.netlify.app/)
+- 해당 프로젝트는 netlify를 통해 배포되었습니다. [배포링크]()
