@@ -60,7 +60,7 @@ src
 
 ## 🎉 Preview
 
-![project](https://github.com/llbllhllk/wanted-pre-onboarding-chart/assets/33623123/eddef9d3-88bc-4a4f-a869-b877cc221873)
+![Sep-13-2023 21-45-28](https://github.com/llbllhllk/wanted-pre-onboarding-chart/assets/33623123/f4edb37e-fbaa-44d7-b98f-b0601bd898cf)
 
 <br />
 
@@ -79,7 +79,7 @@ src
 - 각 Area와 Bar에 `value_area`와 `value_bar`를 dataset에 설정.
 - 각 Area와 Bar의 scales에 yAxisID를 통한 수치 표현 및 position에 따른 위치 조정.
 
-```
+```javscript
 export const data = {
   labels,
   datasets: [
@@ -113,7 +113,7 @@ export const data = {
 
 - tooltip의 callbacks를 통해 특정 데이터 구역에 마우스 호버시 `id`, `value_area`, `value_bar` 데이터셋과 mock에서 추출하고 return하여 출력.
 
-```
+```javscript
 export const options: ChartOptions = {
   tooltip: {
     enabled: true,
@@ -145,7 +145,7 @@ export const options: ChartOptions = {
 - 클릭한 영역의 `id`값을 `selectedID` state에 할당.
 - `selectedID`값 변경에 따른 useEffect hook을 통해 bar타입을 가지는 그래프의 `id`와 `selectedID`가 같은 지를 판별하여 backgroundColor를 조정 후 update.
 
-```
+```javascript
 useEffect(() => {
     const updatedData = {
       ...data,
