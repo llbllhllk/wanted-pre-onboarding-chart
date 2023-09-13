@@ -23,7 +23,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "postinstall": "husky instal",
+    "postinstall": "husky install",
     "format": "prettier --write --cache .",
     "lint": "eslint --cache .",
     "test": "react-scripts test",
