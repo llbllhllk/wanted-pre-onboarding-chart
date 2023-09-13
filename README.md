@@ -14,7 +14,7 @@
 
 ### 실행 방법
 
-- [배포링크]()
+- [배포링크](https://pre-onboarding-chart.netlify.app/)
 
 - 링크가 실행되지 않는 경우 아래 명령어를 순차적으로 입력하여 실행해주세요.
 
@@ -113,7 +113,7 @@ export const data = {
 
 - tooltip의 callbacks를 통해 특정 데이터 구역에 마우스 호버시 `id`, `value_area`, `value_bar` 데이터셋과 mock에서 추출하고 return하여 출력.
 
-```javscript
+```typescript
 export const options: ChartOptions = {
   tooltip: {
     enabled: true,
@@ -127,8 +127,8 @@ export const options: ChartOptions = {
         return `${datasetLabel}: ID: ${id}, value_area: ${value_area}, value_bar: ${value_bar}`;
       },
     },
-  }
-}
+  },
+};
 ```
 
 <br />
@@ -184,4 +184,4 @@ useEffect(() => {
 
 ### 배포
 
-- 해당 프로젝트는 netlify를 통해 배포되었습니다. [배포링크]()
+- 해당 프로젝트는 netlify를 통해 배포되었습니다. [배포링크](https://pre-onboarding-chart.netlify.app/)
